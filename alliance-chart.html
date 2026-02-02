@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alliance Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            min-height: 100vh;
+            font-family: 'Inconsolata', monospace;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(255, 50, 100, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(50, 150, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(150, 50, 255, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Password Screen */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .password-screen.hidden {
+            display: none;
+        }
+
+        .password-box {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password-box h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, #ff3366, #6b8aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .password-box p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Inconsolata', monospace;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            border-color: rgba(255, 51, 102, 0.5);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+        }
+
+        .password-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ff3366, #6b8aff);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .password-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 51, 102, 0.3);
+        }
+
+        .password-error {
+            color: #ff4757;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .password-error.show {
+            opacity: 1;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .main-content.visible {
+            display: block;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            letter-spacing: 0.15em;
+            background: linear-gradient(135deg, #ff3366 0%, #ff6b9d 25%, #c44dff 50%, #6b8aff 75%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(255, 51, 102, 0.3);
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            color: #666;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 12px 24px;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.3), rgba(100, 100, 255, 0.3));
+            border-color: rgba(255, 51, 102, 0.5);
+            color: #fff;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1000px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .player-sidebar {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-chip:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .player-chip.selected {
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.2), rgba(100, 100, 255, 0.2));
+            border-color: rgba(255, 51, 102, 0.4);
+        }
+
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .player-name {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .player-count {
+            font-size: 0.75rem;
+            color: #666;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .content-area {
+            min-height: 600px;
+        }
+
+        .view-container {
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Alliance Cards View */
+        .alliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .alliance-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alliance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--alliance-color);
+            opacity: 0.8;
+        }
+
+        .alliance-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--alliance-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px var(--alliance-glow);
+        }
+
+        .alliance-card.highlighted {
+            border-color: var(--alliance-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .alliance-card.dimmed {
+            opacity: 0.3;
+        }
+
+        .alliance-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+            color: var(--alliance-color);
+        }
+
+        .alliance-members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .member-tag {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .member-tag.highlight {
+            background: var(--alliance-color);
+            color: #000;
+            font-weight: 700;
+            border-color: transparent;
+        }
+
+        /* Matrix View */
+        .matrix-container {
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .matrix-table {
+            border-collapse: separate;
+            border-spacing: 2px;
+            margin: 0 auto;
+        }
+
+        .matrix-table th, .matrix-table td {
+            padding: 8px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .matrix-table th {
+            font-family: 'Bebas Neue', sans-serif;
+            font-weight: normal;
+            letter-spacing: 0.05em;
+            color: #888;
+        }
+
+        .matrix-table th.row-header {
+            text-align: right;
+            padding-right: 15px;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .matrix-table th.col-header {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            height: 120px;
+            vertical-align: bottom;
+            padding-bottom: 10px;
+        }
+
+        .matrix-cell {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .matrix-cell.filled {
+            background: var(--cell-color);
+            cursor: pointer;
+        }
+
+        .matrix-cell.filled:hover {
+            transform: scale(1.3);
+            z-index: 10;
+            box-shadow: 0 0 20px var(--cell-color);
+        }
+
+        .matrix-cell.empty {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .matrix-cell.highlight-row,
+        .matrix-cell.highlight-col {
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Network View */
+        .network-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .network-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .network-link {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+            transition: all 0.3s ease;
+        }
+
+        .network-link.highlighted {
+            stroke: rgba(255, 100, 150, 0.6);
+            stroke-width: 3;
+        }
+
+        .network-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .network-node:hover {
+            filter: brightness(1.3);
+        }
+
+        .network-node.dimmed {
+            opacity: 0.2;
+        }
+
+        .node-label {
+            font-family: 'Inconsolata', monospace;
+            font-size: 11px;
+            fill: #fff;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* Legend */
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .legend-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .stats-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .stats-panel strong {
+            color: #fff;
+        }
+
+        /* Management Panel */
+        .manage-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+            padding: 10px 20px;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            border-radius: 8px;
+            z-index: 100;
+        }
+
+        .manage-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #12121a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            color: #fff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #ff4757;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: rgba(255, 51, 102, 0.5);
+        }
+
+        .form-input::placeholder {
+            color: #555;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #26de81, #10ac84);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(38, 222, 129, 0.3);
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 25px 0;
+        }
+
+        .alliance-list-manage {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .alliance-item-manage {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .alliance-item-manage:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .alliance-item-info {
+            flex: 1;
+        }
+
+        .alliance-item-name {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .alliance-item-members {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .btn-delete {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            padding: 8px 14px;
+            font-family: 'Inconsolata', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            border-radius: 6px;
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 71, 87, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Screen -->
+    <div class="password-screen" id="passwordScreen">
+        <div class="password-box">
+            <h2>Alliance Web</h2>
+            <p>Enter password to continue</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Password" autofocus>
+            <button class="password-submit" id="passwordSubmit">Enter</button>
+            <div class="password-error" id="passwordError">Incorrect password. Try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <button class="manage-btn" id="manageBtn">⚙ Manage Alliances</button>
+        
+        <div class="container">
+        <header>
+            <h1>Alliance Web</h1>
+            <p class="subtitle">Interactive Overlap Visualization</p>
+        </header>
+
+        <div class="view-toggle">
+            <button class="toggle-btn active" data-view="cards">Cards</button>
+            <button class="toggle-btn" data-view="matrix">Matrix</button>
+            <button class="toggle-btn" data-view="network">Network</button>
+        </div>
+
+        <div class="main-grid">
+            <aside class="player-sidebar">
+                <h2 class="sidebar-title">Players</h2>
+                <div class="player-list" id="playerList"></div>
+                <div class="stats-panel" id="statsPanel"></div>
+            </aside>
+
+            <main class="content-area">
+                <div class="view-container active" id="cardsView">
+                    <div class="alliance-grid" id="allianceGrid"></div>
+                </div>
+
+                <div class="view-container" id="matrixView">
+                    <div class="matrix-container" id="matrixContainer"></div>
+                </div>
+
+                <div class="view-container" id="networkView">
+                    <div class="network-container" id="networkContainer"></div>
+                </div>
+
+                <div class="legend">
+                    <h3 class="legend-title">Alliances</h3>
+                    <div class="legend-items" id="legendItems"></div>
+                </div>
+            </main>
+        </div>
+        </div>
+
+        <!-- Management Modal -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Manage Alliances</h3>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Alliance Name</label>
+                        <input type="text" class="form-input" id="newAllianceName" placeholder="e.g., The Misfits">
+                    </div>
+                    <div class="form-group">
+                        <label>Members (comma-separated)</label>
+                        <input type="text" class="form-input" id="newAllianceMembers" placeholder="e.g., Johnny, Shannon, Benji">
+                    </div>
+                    <button class="btn-add" id="addAllianceBtn">+ Add Alliance</button>
+                    
+                    <div class="divider"></div>
+                    
+                    <div class="form-group">
+                        <label>Existing Alliances</label>
+                    </div>
+                    <div class="alliance-list-manage" id="allianceListManage"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = "Production22!";
+        
+        let alliances = {
+            "Bikini Bottoms": ["Johnny", "Shannon", "Benji"],
+            "California Gurls": ["Genki", "Jacob", "Simona"],
+            "Four Corners": ["Genki", "Jacob", "Johnny", "Simona"],
+            "Scarlet Women": ["Shannon", "Simona", "Raya"],
+            "Mean Meaner Meanest": ["Johnny", "Simona", "Julia"],
+            "Essential Workers": ["Benji", "Brandon", "Roy"],
+            "Stoned Strawberries": ["Steph", "Shannon", "Casey"],
+            "Down with Benji and Johnny": ["Genki", "Shannon", "Casey"],
+            "BDS(M)": ["Benji", "Drew", "Simona"],
+            "Inactives": ["Roy", "Drew", "Raya"],
+            "The Brain Trust": ["Julia", "Johnny", "Benji"],
+            "The Steph Defense Fund": ["Roy", "Steph", "Casey"],
+            "The Wanted": ["Casey", "Steph", "Johnny"]
+        };
+
+        let allianceColors = {
+            "Bikini Bottoms": "#ff6b9d",
+            "California Gurls": "#ffb347",
+            "Four Corners": "#87ceeb",
+            "Scarlet Women": "#ff4757",
+            "Mean Meaner Meanest": "#a55eea",
+            "Essential Workers": "#26de81",
+            "Stoned Strawberries": "#fd79a8",
+            "Down with Benji and Johnny": "#00d2d3",
+            "BDS(M)": "#f8b500",
+            "Inactives": "#747d8c",
+            "The Brain Trust": "#5f27cd",
+            "The Steph Defense Fund": "#10ac84",
+            "The Wanted": "#ff6348"
+        };
+
+        // Color palette for new alliances
+        const colorPalette = [
+            "#ff6b9d", "#ffb347", "#87ceeb", "#ff4757", "#a55eea", 
+            "#26de81", "#fd79a8", "#00d2d3", "#f8b500", "#747d8c",
+            "#5f27cd", "#10ac84", "#ff6348", "#6c5ce7", "#00cec9",
+            "#e84393", "#fdcb6e", "#74b9ff", "#55efc4", "#fab1a0"
+        ];
+
+        function getRandomColor() {
+            return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        }
+
+        // Password handling
+        const passwordScreen = document.getElementById('passwordScreen');
+        const mainContent = document.getElementById('mainContent');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordSubmit = document.getElementById('passwordSubmit');
+        const passwordError = document.getElementById('passwordError');
+
+        function checkPassword() {
+            if (passwordInput.value === CORRECT_PASSWORD) {
+                passwordScreen.classList.add('hidden');
+                mainContent.classList.add('visible');
+                initializeApp();
+            } else {
+                passwordError.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+                setTimeout(() => passwordError.classList.remove('show'), 2000);
+            }
+        }
+
+        passwordSubmit.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Modal handling
+        const modalOverlay = document.getElementById('modalOverlay');
+        const manageBtn = document.getElementById('manageBtn');
+        const modalClose = document.getElementById('modalClose');
+        const addAllianceBtn = document.getElementById('addAllianceBtn');
+        const newAllianceName = document.getElementById('newAllianceName');
+        const newAllianceMembers = document.getElementById('newAllianceMembers');
+        const allianceListManage = document.getElementById('allianceListManage');
+
+        manageBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+            updateManageList();
+        });
+
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        function updateManageList() {
+            allianceListManage.innerHTML = Object.entries(alliances).map(([name, members]) => `
+                <div class="alliance-item-manage">
+                    <div class="alliance-item-info">
+                        <div class="alliance-item-name">${name}</div>
+                        <div class="alliance-item-members">${members.join(', ')}</div>
+                    </div>
+                    <button class="btn-delete" data-alliance="${name}">Delete</button>
+                </div>
+            `).join('');
+
+            allianceListManage.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const name = btn.dataset.alliance;
+                    deleteAlliance(name);
+                });
+            });
+        }
+
+        function addAlliance() {
+            const name = newAllianceName.value.trim();
+            const membersStr = newAllianceMembers.value.trim();
+            
+            if (!name || !membersStr) {
+                alert('Please enter both alliance name and members');
+                return;
+            }
+
+            const members = membersStr.split(',').map(m => m.trim()).filter(m => m);
+            
+            if (members.length === 0) {
+                alert('Please enter at least one member');
+                return;
+            }
+
+            if (alliances[name]) {
+                alert('An alliance with this name already exists');
+                return;
+            }
+
+            alliances[name] = members;
+            allianceColors[name] = getRandomColor();
+            
+            newAllianceName.value = '';
+            newAllianceMembers.value = '';
+            
+            updateManageList();
+            refreshAllViews();
+        }
+
+        function deleteAlliance(name) {
+            if (confirm(`Delete "${name}"?`)) {
+                delete alliances[name];
+                delete allianceColors[name];
+                updateManageList();
+                refreshAllViews();
+            }
+        }
+
+        addAllianceBtn.addEventListener('click', addAlliance);
+
+        // Get all unique players (dynamically computed)
+        function getAllPlayers() {
+            return [...new Set(Object.values(alliances).flat())].sort();
+        }
+
+        // Player colors based on how many alliances they're in
+        function getPlayerColor(player) {
+            const allPlayers = getAllPlayers();
+            const count = Object.values(alliances).filter(members => members.includes(player)).length;
+            const hue = (allPlayers.indexOf(player) * 360 / allPlayers.length);
+            const saturation = 60 + count * 5;
+            const lightness = 50 + count * 3;
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        function getPlayerAlliances(player) {
+            return Object.entries(alliances)
+                .filter(([_, members]) => members.includes(player))
+                .map(([name, _]) => name);
+        }
+
+        let selectedPlayer = null;
+
+        // Initialize player sidebar
+        function initPlayerSidebar() {
+            const allPlayers = getAllPlayers();
+            const list = document.getElementById('playerList');
+            list.innerHTML = allPlayers.map(player => {
+                const count = getPlayerAlliances(player).length;
+                const color = getPlayerColor(player);
+                return `
+                    <div class="player-chip" data-player="${player}">
+                        <div class="player-avatar" style="background: ${color}">${player[0]}</div>
+                        <span class="player-name">${player}</span>
+                        <span class="player-count">${count}</span>
+                    </div>
+                `;
+            }).join('');
+
+            list.querySelectorAll('.player-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const player = chip.dataset.player;
+                    if (selectedPlayer === player) {
+                        selectedPlayer = null;
+                        chip.classList.remove('selected');
+                    } else {
+                        document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
+                        selectedPlayer = player;
+                        chip.classList.add('selected');
+                    }
+                    updateAllViews();
+                });
+            });
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const panel = document.getElementById('statsPanel');
+            const allPlayers = getAllPlayers();
+            const mostConnected = allPlayers
+                .map(p => ({ name: p, count: getPlayerAlliances(p).length }))
+                .sort((a, b) => b.count - a.count)[0];
+            
+            panel.innerHTML = `
+                <div><strong>${allPlayers.length}</strong> players</div>
+                <div><strong>${Object.keys(alliances).length}</strong> alliances</div>
+                <div>Most connected: <strong>${mostConnected ? mostConnected.name : 'N/A'}</strong> (${mostConnected ? mostConnected.count : 0})</div>
+            `;
+        }
+
+        // Alliance Cards View
+        function initCardsView() {
+            const grid = document.getElementById('allianceGrid');
+            grid.innerHTML = Object.entries(alliances).map(([name, members]) => {
+                const color = allianceColors[name];
+                return `
+                    <div class="alliance-card" data-alliance="${name}" 
+                         style="--alliance-color: ${color}; --alliance-glow: ${color}40">
+                        <div class="alliance-name">${name}</div>
+                        <div class="alliance-members">
+                            ${members.map(m => `<span class="member-tag" data-member="${m}">${m}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateCardsView() {
+            document.querySelectorAll('.alliance-card').forEach(card => {
+                const members = alliances[card.dataset.alliance];
+                const isHighlighted = selectedPlayer && members.includes(selectedPlayer);
+                
+                card.classList.toggle('highlighted', isHighlighted);
+                card.classList.toggle('dimmed', selectedPlayer && !isHighlighted);
+
+                card.querySelectorAll('.member-tag').forEach(tag => {
+                    tag.classList.toggle('highlight', tag.dataset.member === selectedPlayer);
+                });
+            });
+        }
+
+        // Matrix View
+        function initMatrixView() {
+            const container = document.getElementById('matrixContainer');
+            const allianceNames = Object.keys(alliances);
+            const allPlayers = getAllPlayers();
+            
+            let html = '<table class="matrix-table"><thead><tr><th></th>';
+            allPlayers.forEach(player => {
+                html += `<th class="col-header">${player}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            allianceNames.forEach(alliance => {
+                const color = allianceColors[alliance];
+                html += `<tr><th class="row-header" style="color: ${color}">${alliance}</th>`;
+                allPlayers.forEach(player => {
+                    const isMember = alliances[alliance].includes(player);
+                    html += `<td><div class="matrix-cell ${isMember ? 'filled' : 'empty'}" 
+                                data-alliance="${alliance}" data-player="${player}"
+                                style="--cell-color: ${color}"></div></td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            container.querySelectorAll('.matrix-cell.filled').forEach(cell => {
+                cell.addEventListener('mouseenter', () => {
+                    const alliance = cell.dataset.alliance;
+                    const player = cell.dataset.player;
+                    document.querySelectorAll(`.matrix-cell[data-alliance="${alliance}"]`).forEach(c => c.classList.add('highlight-row'));
+                    document.querySelectorAll(`.matrix-cell[data-player="${player}"]`).forEach(c => c.classList.add('highlight-col'));
+                });
+                cell.addEventListener('mouseleave', () => {
+                    document.querySelectorAll('.matrix-cell').forEach(c => {
+                        c.classList.remove('highlight-row', 'highlight-col');
+                    });
+                });
+            });
+        }
+
+        // Network View
+        function initNetworkView() {
+            const container = document.getElementById('networkContainer');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const allPlayers = getAllPlayers();
+
+            // Create nodes for players
+            const nodes = allPlayers.map((player, i) => {
+                const angle = (i / allPlayers.length) * 2 * Math.PI;
+                const radius = Math.min(width, height) * 0.35;
+                return {
+                    id: player,
+                    x: width / 2 + Math.cos(angle) * radius,
+                    y: height / 2 + Math.sin(angle) * radius,
+                    color: getPlayerColor(player),
+                    size: 8 + getPlayerAlliances(player).length * 3
+                };
+            });
+
+            // Create links between players in same alliance
+            const links = [];
+            Object.entries(alliances).forEach(([alliance, members]) => {
+                for (let i = 0; i < members.length; i++) {
+                    for (let j = i + 1; j < members.length; j++) {
+                        const existing = links.find(l => 
+                            (l.source === members[i] && l.target === members[j]) ||
+                            (l.source === members[j] && l.target === members[i])
+                        );
+                        if (existing) {
+                            existing.weight++;
+                            existing.alliances.push(alliance);
+                        } else {
+                            links.push({
+                                source: members[i],
+                                target: members[j],
+                                weight: 1,
+                                alliances: [alliance]
+                            });
+                        }
+                    }
+                }
+            });
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.classList.add('network-svg');
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            // Draw links
+            links.forEach(link => {
+                const source = nodes.find(n => n.id === link.source);
+                const target = nodes.find(n => n.id === link.target);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.classList.add('network-link');
+                line.setAttribute('x1', source.x);
+                line.setAttribute('y1', source.y);
+                line.setAttribute('x2', target.x);
+                line.setAttribute('y2', target.y);
+                line.setAttribute('stroke-width', link.weight);
+                line.dataset.source = link.source;
+                line.dataset.target = link.target;
+                svg.appendChild(line);
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.classList.add('network-node');
+                g.dataset.player = node.id;
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', node.x);
+                circle.setAttribute('cy', node.y);
+                circle.setAttribute('r', node.size);
+                circle.setAttribute('fill', node.color);
+
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.classList.add('node-label');
+                label.setAttribute('x', node.x);
+                label.setAttribute('y', node.y + node.size + 15);
+                label.setAttribute('text-anchor', 'middle');
+                label.textContent = node.id;
+
+                g.appendChild(circle);
+                g.appendChild(label);
+                svg.appendChild(g);
+
+                g.addEventListener('click', () => {
+                    const player = node.id;
+                    if (selectedPlayer === player) {
+                        selectedPlayer = null;
+                    } else {
+                        selectedPlayer = player;
+                    }
+                    document.querySelectorAll('.player-chip').forEach(c => {
+                        c.classList.toggle('selected', c.dataset.player === selectedPlayer);
+                    });
+                    updateAllViews();
+                });
+            });
+
+            container.innerHTML = '';
+            container.appendChild(svg);
+        }
+
+        function updateNetworkView() {
+            document.querySelectorAll('.network-node').forEach(node => {
+                const player = node.dataset.player;
+                const isSelected = player === selectedPlayer;
+                const isConnected = selectedPlayer && 
+                    Object.values(alliances).some(members => 
+                        members.includes(selectedPlayer) && members.includes(player)
+                    );
+                
+                node.classList.toggle('dimmed', selectedPlayer && !isSelected && !isConnected);
+            });
+
+            document.querySelectorAll('.network-link').forEach(link => {
+                const connected = selectedPlayer && 
+                    (link.dataset.source === selectedPlayer || link.dataset.target === selectedPlayer);
+                link.classList.toggle('highlighted', connected);
+            });
+        }
+
+        // Legend
+        function initLegend() {
+            const legend = document.getElementById('legendItems');
+            legend.innerHTML = Object.entries(allianceColors).map(([name, color]) => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${color}"></div>
+                    <span>${name}</span>
+                </div>
+            `).join('');
+        }
+
+        // View switching
+        function initViewToggle() {
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const view = btn.dataset.view;
+                    document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+                    document.getElementById(view + 'View').classList.add('active');
+
+                    if (view === 'network') {
+                        initNetworkView();
+                        updateNetworkView();
+                    }
+                });
+            });
+        }
+
+        function updateAllViews() {
+            updateCardsView();
+            updateNetworkView();
+        }
+
+        function refreshAllViews() {
+            selectedPlayer = null;
+            document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('selected'));
+            initPlayerSidebar();
+            initCardsView();
+            initMatrixView();
+            initNetworkView();
+            initLegend();
+        }
+
+        function initializeApp() {
+            initPlayerSidebar();
+            initCardsView();
+            initMatrixView();
+            initNetworkView();
+            initLegend();
+            initViewToggle();
+        }
+    </script>
+</body>
+</html>
